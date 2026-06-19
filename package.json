@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "sudheer",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/SudheerKumarDas/real-time-notification-management-system/issues"
   },
