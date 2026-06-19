@@ -5,7 +5,7 @@ import User from "../models/User.js";
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "All fields are required",
@@ -116,5 +116,43 @@ export const profile = async (req, res) => {
     return res.status(500).json({
       message: "Internal Server Error",
     });
+  }
+};
+
+export const followUser = async (req, res) => {
+  try {
+    const userId = req.id;
+    const targetId = req.params.id;
+
+    if (userId.toString() === targetId) {
+      return res.status(400).json({
+        message: "You cannot follow yourself",
+      });
+    }
+    const user = await User.findById(userId);
+    const targetUser = await User.findById(targetId);
+
+    if (!targetUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+    if (user.following.includes(targetId)) {
+      return res.status(400).json({
+        message: "Already following the user",
+      });
+    }
+    user.following.push(targetId);
+    targetUser.followers.push(userId);
+
+    await user.save();
+    await targetUser.save();
+
+    return res.status(200).json({
+      message: "Followed successfully",
+    });
+  } catch (error) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
