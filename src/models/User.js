@@ -7,11 +7,13 @@ const userSchema = new mongoose.Schema({
     refreshToken:String,
     following:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+        ref:"User",
+        default:[]
     },
     followers:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+        ref:"User",
+        default:[]
     }
 }, {
     timestamps:true

@@ -6,7 +6,7 @@ import User from "../models/User.js";
 export const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (!name || !email || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -19,14 +19,14 @@ export const register = async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
-      name,
+      username,
       email,
       password: hashedPassword,
     });
     res.status(201).json({
       message: "user registered successfully",
       user: {
-        name: user.name,
+        username: user.username,
         email: user.email,
       },
     });
@@ -98,7 +98,7 @@ export const login = async (req, res) => {
 
 export const profile = async (req, res) => {
   try {
-    const userId = req.id;
+    const userId = req.user.id;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
@@ -121,7 +121,7 @@ export const profile = async (req, res) => {
 
 export const followUser = async (req, res) => {
   try {
-    const userId = req.id;
+    const userId = req.user.id;
     const targetId = req.params.id;
 
     if (userId.toString() === targetId) {
@@ -137,7 +137,7 @@ export const followUser = async (req, res) => {
         message: "User not found",
       });
     }
-    if (user.following.includes(targetId)) {
+    if (user.following?.some(id => id.toString() === targetId)) {
       return res.status(400).json({
         message: "Already following the user",
       });
@@ -152,7 +152,7 @@ export const followUser = async (req, res) => {
       message: "Followed successfully",
     });
   } catch (error) {
-    console.error(err);
+    console.error(error);
     return res.status(500).json({ message: "Server error" });
   }
 };
